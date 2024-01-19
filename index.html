@@ -1,1 +1,115 @@
-<p>hello</p>
+// Dropdown.tsx
+import React, { useState, useRef, useEffect, MouseEvent } from 'react';
+
+interface DropdownProps {
+  title: string;
+  options: string[];
+  closeOnClickOutside?: boolean;
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ title, options, closeOnClickOutside = true }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (closeOnClickOutside && isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [closeOnClickOutside, isOpen]);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <div ref={dropdownRef} className='dropdown'>
+      <button className="bg:#266a97 mx:1rem p:10|15 r:3 font:20 font:semibold b:1|solid|gray-28" onClick={handleToggle}>{title}</button>
+      {isOpen && (
+        <ul className="flex:col animate:rotateMenu">
+          {options.map((option, index) => (
+            <li
+              key={index}
+              className="iteration-count:1 height:fit blend:overlay font:4vw font:40@xs font:heavy fg:white max-w:max"
+            >
+              {option}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default Dropdown;
+---------------------------------------------
+    // Dropdownmain.tsx
+
+import React from 'react';
+import Dropdown from './Dropdown';
+
+const Dropdownmain: React.FC = () => {
+    const dropdown1 = 'Choose an option';
+    const dropdown12 = 'Choose an option123';
+
+    const options = ['Option 1', 'Option 2', 'Option 3'];
+
+    return (
+        <div >
+            <h1>Dropdown Button Example</h1>
+            <div className='flex-row '>
+                <Dropdown title={dropdown1} options={options} closeOnClickOutside={false} />
+                <Dropdown title={dropdown12} options={options} />
+            </div>
+        </div>
+    );
+};
+
+export default Dropdownmain;
+-----------------
+                  /* index.css */
+@keyframes rotateMenu {
+    0% {
+        transform: rotateX(-90deg);
+    }
+
+    70% {
+        transform: rotateX(20deg);
+    }
+
+    100% {
+        transform: rotateX(0deg);
+    }
+}
+
+.animate\:rotateMenu {
+    animation: rotateMenu 0.8s ease-in-out forwards;
+    transform-origin: top center
+}
+
+.flex-row{
+    display: flex;
+    flex-direction: row;
+}
+                  ------------------------------------------------------
+                  
+
+import React from 'react';
+import Dropdownmain from './Components/DropDown/DropDown-main.tsx';
+
+const App: React.FC = () => {
+  
+
+  return (
+    <div>
+      <Dropdownmain/>
+    </div>
+  );
+};
+
+export default App;
